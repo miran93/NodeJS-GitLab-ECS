@@ -26,7 +26,7 @@ stages:
 build:
   stage: build
   script:
-    - export DOCKER_HOST=tcp://127.0.0.1:2375
+    - export DOCKER_HOST=tcp://127.0.0.1:2375 && docker build --pull -t ${CI_REGISTRY_IMAGE} .
     - echo "Building image..."
     - docker build -t $REPOSITORY_URL:latest .
     - echo "Tagging image..."
