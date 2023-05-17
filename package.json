@@ -13,12 +13,12 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://gitlab.com/iamads/my-ecs-demo.git"
+    "url": "git+https://gitlab.com/practise3610519/nodejs_ecs.git"
   },
   "author": "ads",
   "license": "ISC",
   "bugs": {
-    "url": "https://gitlab.com/iamads/my-ecs-demo/issues"
+    "url": "https://gitlab.com/practise3610519/nodejs_ecs/issues"
   },
-  "homepage": "https://gitlab.com/iamads/my-ecs-demo#README"
+  "homepage": "https://gitlab.com/practise3610519/nodejs_ecs#README"
 }
