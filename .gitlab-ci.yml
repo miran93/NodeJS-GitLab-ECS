@@ -1,5 +1,8 @@
 image: docker:stable
 
+services:
+  - docker:dind
+
 variables:
   REPOSITORY_URL: 360833390362.dkr.ecr.us-east-1.amazonaws.com/nodejsgitlab
   TASK_DEFINITION_NAME: nodejsgitlab
