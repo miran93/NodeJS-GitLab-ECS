@@ -1,7 +1,9 @@
 image: docker:19.03.10
 
 services:
-  - docker:latest
+  - name: docker:dind
+    command: ["--tls=false"]
+
 
 variables:
   REPOSITORY_URL: 360833390362.dkr.ecr.us-east-1.amazonaws.com/nodejsgitlab
