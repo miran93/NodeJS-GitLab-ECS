@@ -1,7 +1,7 @@
 image: docker:19.03.10
 
 services:
-  - dockerd
+  - docker:19-dind
 
 variables:
   REPOSITORY_URL: 360833390362.dkr.ecr.us-east-1.amazonaws.com/nodejsgitlab
