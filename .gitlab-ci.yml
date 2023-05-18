@@ -8,7 +8,7 @@ variables:
   TASK_DEFINITION_NAME: nodejsgittask
   CLUSTER_NAME: NodejsGitlab
   SERVICE_NAME: nodejsservice1
-  DOCKER_HOST: "tcp://localhost:2375"
+  DOCKER_HOST: "tcp://172.17.0.2:2376"
 
 before_script:
   - apk add --no-cache curl jq python py-pip
@@ -26,6 +26,7 @@ stages:
 build:
   stage: build
   script:
+    - export DOCKER_HOST="tcp://172.17.0.2:2376"
     - docker version
     - echo "Building image..."
     - docker build -t $REPOSITORY_URL:latest .
