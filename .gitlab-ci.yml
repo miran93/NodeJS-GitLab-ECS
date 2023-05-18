@@ -2,7 +2,6 @@ image: docker:19.03.10
 
 services:
 - name: docker:dind
-  entrypoint: ["dockerd-entrypoint.sh", "--tls=false"]
 
 variables:
   REPOSITORY_URL: 360833390362.dkr.ecr.us-east-1.amazonaws.com/nodejsgitlab
