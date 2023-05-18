@@ -1,4 +1,4 @@
-image: docker:stable
+image: docker:19.03.10
 
 services:
 - name: docker:dind
@@ -27,6 +27,7 @@ build:
   stage: build
   script:
     - echo "Building image..."
+    - docker login
     - docker build -t $REPOSITORY_URL:latest .
     - echo "Tagging image..."
     - docker tag $REPOSITORY_URL:latest $REPOSITORY_URL:$IMAGE_TAG
