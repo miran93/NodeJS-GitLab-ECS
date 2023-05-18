@@ -6,9 +6,8 @@ services:
 variables:
   REPOSITORY_URL: 360833390362.dkr.ecr.us-east-1.amazonaws.com/nodejsgitlab
   TASK_DEFINITION_NAME: nodejsgittask
-  CLUSTER_NAME: NodejsGitlab
-  SERVICE_NAME: nodejsservice1
-  DOCKER_HOST: "tcp://172.17.0.2:2376"
+  CLUSTER_NAME: my-ecs
+  SERVICE_NAME: nodejsgittask
 
 before_script:
   - apk add --no-cache curl jq python py-pip
@@ -26,7 +25,6 @@ stages:
 build:
   stage: build
   script:
-    - export DOCKER_HOST="tcp://172.17.0.2:2376"
     - docker version
     - echo "Building image..."
     - docker build -t $REPOSITORY_URL:latest .
