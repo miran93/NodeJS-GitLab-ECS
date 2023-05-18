@@ -26,7 +26,6 @@ stages:
 build:
   stage: build
   script:
-    - export DOCKER_HOST="tcp://localhost:2375"
     - docker version
     - echo "Building image..."
     - docker build -t $REPOSITORY_URL:latest .
