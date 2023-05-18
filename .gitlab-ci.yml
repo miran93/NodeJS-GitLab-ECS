@@ -12,7 +12,7 @@ services:
 
 before_script:
   - apk add python3
-  - pip install awscli
+  - pip3 install awscli
   - $(aws ecr get-login --no-include-email --region "${REGION}")
   - IMAGE_TAG="$(echo $CI_COMMIT_SHA | head -c 8)"
 
