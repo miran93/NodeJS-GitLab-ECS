@@ -12,8 +12,8 @@ services:
 
 before_script:
   - apk add python3
-  - apk add --no-cache --upgrade bash
-  - pip install awscli
+  - export PATH=~/.local/bin:$PATH
+  - pip install awscli --upgrade --user
   - $(aws ecr get-login --no-include-email --region "${REGION}")
   - IMAGE_TAG="$(echo $CI_COMMIT_SHA | head -c 8)"
 
