@@ -1,50 +1,32 @@
-image: docker:19.03.10
-
-services:
-  - docker:dind
-
-variables:
-  REPOSITORY_URL: 360833390362.dkr.ecr.us-east-1.amazonaws.com/nodejsgitlab
-  TASK_DEFINITION_NAME: nodejsgittask
-  CLUSTER_NAME: my-ecs
-  SERVICE_NAME: nodejsgittask
-
-before_script:
-  - apk add --no-cache curl jq python py-pip
-  - pip install awscli
-  - aws configure set aws_access_key_id $AWS_ACCESS_KEY_ID
-  - aws configure set aws_secret_access_key $AWS_SECRET_ACCESS_KEY
-  - aws configure set region $AWS_DEFAULT_REGION
-  - $(aws ecr get-login --no-include-email --region "${AWS_DEFAULT_REGION}")
-  - IMAGE_TAG="$(echo $CI_COMMIT_SHA | head -c 8)"
-
 stages:
   - build
   - deploy
 
+variables:
+  AWS_DEFAULT_REGION: us-east-1
+  AWS_ECS_CLUSTER_NAME: Nodejs-ecs
+  AWS_ECS_SERVICE_NAME: nodejs-service
+  AWS_ECR_REPOSITORY: nodejs-ecs
+
 build:
   stage: build
+  image: node:14
   script:
-    - docker version
-    - echo "Building image..."
-    - docker build -t $REPOSITORY_URL:latest .
-    - echo "Tagging image..."
-    - docker tag $REPOSITORY_URL:latest $REPOSITORY_URL:$IMAGE_TAG
-    - echo "Pushing image..."
-    - docker push $REPOSITORY_URL:latest
-    - docker push $REPOSITORY_URL:$IMAGE_TAG
-  only:
-    - master
+    - npm install
+    - npm run build
+    - zip -r dist.zip dist/
+
+artifacts:
+  paths:
+    - dist.zip
 
 deploy:
   stage: deploy
+  image: amazon/aws-cli:2.x
+  before_script:
+    - echo "Logging into Amazon ECR..."
+    - echo "$AWS_ACCESS_KEY_ID:$AWS_SECRET_ACCESS_KEY" | aws configure --profile ecsuser
   script:
-    - echo $REPOSITORY_URL:$IMAGE_TAG
-    - TASK_DEFINITION=$(aws ecs describe-task-definition --task-definition "$TASK_DEFINITION_NAME" --region "${AWS_DEFAULT_REGION}")
-    - NEW_CONTAINER_DEFINTIION=$(echo $TASK_DEFINITION | jq --arg IMAGE "$REPOSITORY_URL:$IMAGE_TAG" '.taskDefinition.containerDefinitions[0].image = $IMAGE | .taskDefinition.containerDefinitions[0]')
-    - echo "Registering new container definition..."
-    - aws ecs register-task-definition --region "${AWS_DEFAULT_REGION}" --family "${TASK_DEFINITION_NAME}" --container-definitions "${NEW_CONTAINER_DEFINTIION}"
-    - echo "Updating the service..."
-    - aws ecs update-service --region "${AWS_DEFAULT_REGION}" --cluster "${CLUSTER_NAME}" --service "${SERVICE_NAME}"  --task-definition "${TASK_DEFINITION_NAME}"
-  only:
-    - master
+    - aws s3 cp dist.zip s3://nodejs-git/
+    - aws ecs update-service --cluster $AWS_ECS_CLUSTER_NAME --service $AWS_ECS_SERVICE_NAME --force-new-deployment
+
