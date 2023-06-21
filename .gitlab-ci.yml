@@ -16,8 +16,8 @@ build:
     - npm run build
     - zip -r dist.zip dist/
 
-artifacts:
-  paths:
+  artifacts:
+    paths:
     - dist.zip
 
 deploy:
