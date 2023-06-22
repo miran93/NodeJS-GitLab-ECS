@@ -1,36 +1,36 @@
 stages:
   - build
+  - package
   - deploy
 
 variables:
-  AWS_DEFAULT_REGION: us-east-1
-  AWS_ECS_CLUSTER_NAME: Nodejs-ecs
-  AWS_ECS_SERVICE_NAME: nodejs-service
-  AWS_ECR_REPOSITORY: nodejs-ecs
+  AWS_REGION: "us-east-1"
+  ECS_CLUSTER: "my-ecs-cluster"
+  ECS_SERVICE: "my-ecs-service"
+
 
 build:
   stage: build
-  image: node:14
+  image: node:lts
   script:
     - npm install
-    - npm run build
 
-  artifacts:
-    paths:
-    - dist/
-    - package-lock.json
-    - node_modules/
+package:
+  stage: package
+  image: python:3
+  before_script:
+    - pip install awscli
+  script:
+    - aws configure set aws_access_key_id $AWS_ACCESS_KEY_ID
+    - aws configure set aws_secret_access_key $AWS_SECRET_ACCESS_KEY
+    - aws configure set region $AWS_REGION
+    - aws s3 cp ./dist s3://nodejs-git/ --recursive
 
 deploy:
   stage: deploy
-  image: amazon/aws-cli:2.x
-  before_script:
-    - echo "Logging into Amazon ECR..."
-    - echo "$AWS_ACCESS_KEY_ID:$AWS_SECRET_ACCESS_KEY" | aws configure --profile ecsuser
+  image: amazon/aws-cli:latest
   script:
-    - aws ecr get-login-password --region $AWS_DEFAULT_REGION | docker login --username AWS --password-stdin $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com
-    - docker build -t $AWS_ECR_REPOSITORY .
-    - docker tag $AWS_ECR_REPOSITORY:latest $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$AWS_ECR_REPOSITORY:latest
-    - docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$AWS_ECR_REPOSITORY:latest
-    - aws ecs update-service --cluster $AWS_ECS_CLUSTER_NAME --service $AWS_ECS_SERVICE_NAME --force-new-deployment
-
+    - aws configure set aws_access_key_id $AWS_ACCESS_KEY_ID
+    - aws configure set aws_secret_access_key $AWS_SECRET_ACCESS_KEY
+    - aws configure set region $AWS_REGION
+    - aws ecs update-service --cluster $ECS_CLUSTER --service $ECS_SERVICE --force-new-deployment
