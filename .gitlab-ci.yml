@@ -15,8 +15,8 @@ build:
     - npm install
     - npm run build
 
-artifacts:
-  paths:
+  artifacts:
+    paths:
     - dist/
     - package-lock.json
     - node_modules/
