@@ -28,9 +28,12 @@ package:
 
 deploy:
   stage: deploy
-  image: amazon/aws-cli:latest
+  image: amazon/aws-cli:2.x
   script:
-    - aws configure set aws_access_key_id $AWS_ACCESS_KEY_ID
-    - aws configure set aws_secret_access_key $AWS_SECRET_ACCESS_KEY
-    - aws configure set region $AWS_REGION
+    - echo "ECS_CLUSTER=$ECS_CLUSTER" >> /root/.bashrc
+    - echo "ECS_SERVICE=$ECS_SERVICE" >> /root/.bashrc
+    - echo "AWS_DEFAULT_REGION=$AWS_REGION" >> /root/.bashrc
+    - echo "AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID" >> /root/.bashrc
+    - echo "AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY" >> /root/.bashrc
+    - /bin/bash -c "source /root/.bashrc"
     - aws ecs update-service --cluster $ECS_CLUSTER --service $ECS_SERVICE --force-new-deployment
