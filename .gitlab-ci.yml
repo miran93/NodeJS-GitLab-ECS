@@ -5,8 +5,8 @@ stages:
 
 variables:
   AWS_REGION: "us-east-1"
-  ECS_CLUSTER: "my-ecs-cluster"
-  ECS_SERVICE: "my-ecs-service"
+  ECS_CLUSTER: "Nodejs-ecs"
+  ECS_SERVICE: "nodejs-service"
 
 
 build:
