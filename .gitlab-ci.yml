@@ -28,7 +28,7 @@ package:
 
 deploy:
   stage: deploy
-  image: amazon/aws-cli:2.x
+  image: amazon/aws-cli:2
   script:
     - echo "ECS_CLUSTER=$ECS_CLUSTER" >> /root/.bashrc
     - echo "ECS_SERVICE=$ECS_SERVICE" >> /root/.bashrc
